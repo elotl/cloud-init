@@ -38,7 +38,7 @@ import (
 	"github.com/coreos/coreos-cloudinit/datasource/metadata/packet"
 	"github.com/coreos/coreos-cloudinit/datasource/proc_cmdline"
 	"github.com/coreos/coreos-cloudinit/datasource/url"
-	"github.com/coreos/coreos-cloudinit/datasource/vmware"
+	//"github.com/coreos/coreos-cloudinit/datasource/vmware"
 	"github.com/coreos/coreos-cloudinit/datasource/waagent"
 	"github.com/coreos/coreos-cloudinit/initialize"
 	"github.com/coreos/coreos-cloudinit/network"
@@ -256,8 +256,8 @@ func main() {
 			ifaces, err = network.ProcessDebianNetconf(metadata.NetworkConfig.([]byte))
 		case "packet":
 			ifaces, err = network.ProcessPacketNetconf(metadata.NetworkConfig.(packet.NetworkData))
-		case "vmware":
-			ifaces, err = network.ProcessVMwareNetconf(metadata.NetworkConfig.(map[string]string))
+		// case "vmware":
+		// 	ifaces, err = network.ProcessVMwareNetconf(metadata.NetworkConfig.(map[string]string))
 		default:
 			err = fmt.Errorf("Unsupported network config format %q", flags.convertNetconf)
 		}
@@ -342,12 +342,12 @@ func getDatasources() []datasource.Datasource {
 	if flags.sources.procCmdLine {
 		dss = append(dss, proc_cmdline.NewDatasource())
 	}
-	if flags.sources.vmware {
-		dss = append(dss, vmware.NewDatasource(""))
-	}
-	if flags.sources.ovfEnv != "" {
-		dss = append(dss, vmware.NewDatasource(flags.sources.ovfEnv))
-	}
+	// if flags.sources.vmware {
+	// 	dss = append(dss, vmware.NewDatasource(""))
+	// }
+	// if flags.sources.ovfEnv != "" {
+	// 	dss = append(dss, vmware.NewDatasource(flags.sources.ovfEnv))
+	// }
 	return dss
 }
 
