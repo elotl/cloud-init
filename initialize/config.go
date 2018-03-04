@@ -79,24 +79,24 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 				return err
 			}
 		}
-		if user.SSHImportGithubUser != "" {
-			log.Printf("Authorizing github user %s SSH keys for CoreOS user '%s'", user.SSHImportGithubUser, user.Name)
-			if err := SSHImportGithubUser(user.Name, user.SSHImportGithubUser); err != nil {
-				return err
-			}
-		}
-		for _, u := range user.SSHImportGithubUsers {
-			log.Printf("Authorizing github user %s SSH keys for CoreOS user '%s'", u, user.Name)
-			if err := SSHImportGithubUser(user.Name, u); err != nil {
-				return err
-			}
-		}
-		if user.SSHImportURL != "" {
-			log.Printf("Authorizing SSH keys for CoreOS user '%s' from '%s'", user.Name, user.SSHImportURL)
-			if err := SSHImportKeysFromURL(user.Name, user.SSHImportURL); err != nil {
-				return err
-			}
-		}
+		// if user.SSHImportGithubUser != "" {
+		// 	log.Printf("Authorizing github user %s SSH keys for CoreOS user '%s'", user.SSHImportGithubUser, user.Name)
+		// 	if err := SSHImportGithubUser(user.Name, user.SSHImportGithubUser); err != nil {
+		// 		return err
+		// 	}
+		// }
+		// for _, u := range user.SSHImportGithubUsers {
+		// 	log.Printf("Authorizing github user %s SSH keys for CoreOS user '%s'", u, user.Name)
+		// 	if err := SSHImportGithubUser(user.Name, u); err != nil {
+		// 		return err
+		// 	}
+		// }
+		// if user.SSHImportURL != "" {
+		// 	log.Printf("Authorizing SSH keys for CoreOS user '%s' from '%s'", user.Name, user.SSHImportURL)
+		// 	if err := SSHImportKeysFromURL(user.Name, user.SSHImportURL); err != nil {
+		// 		return err
+		// 	}
+		// }
 	}
 
 	if len(cfg.SSHAuthorizedKeys) > 0 {
@@ -113,35 +113,35 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 		writeFiles = append(writeFiles, system.File{File: file})
 	}
 
-	for _, ccf := range []CloudConfigFile{
-		system.OEM{OEM: cfg.CoreOS.OEM},
-		system.Update{Update: cfg.CoreOS.Update, ReadConfig: system.DefaultReadConfig},
-		system.EtcHosts{EtcHosts: cfg.ManageEtcHosts},
-		system.Flannel{Flannel: cfg.CoreOS.Flannel},
-	} {
-		f, err := ccf.File()
-		if err != nil {
-			return err
-		}
-		if f != nil {
-			writeFiles = append(writeFiles, *f)
-		}
-	}
+	// for _, ccf := range []CloudConfigFile{
+	// 	system.OEM{OEM: cfg.CoreOS.OEM},
+	// 	system.Update{Update: cfg.CoreOS.Update, ReadConfig: system.DefaultReadConfig},
+	// 	system.EtcHosts{EtcHosts: cfg.ManageEtcHosts},
+	// 	system.Flannel{Flannel: cfg.CoreOS.Flannel},
+	// } {
+	// 	f, err := ccf.File()
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	if f != nil {
+	// 		writeFiles = append(writeFiles, *f)
+	// 	}
+	// }
 
-	var units []system.Unit
-	for _, u := range cfg.CoreOS.Units {
-		units = append(units, system.Unit{Unit: u})
-	}
+	// var units []system.Unit
+	// for _, u := range cfg.CoreOS.Units {
+	// 	units = append(units, system.Unit{Unit: u})
+	// }
 
-	for _, ccu := range []CloudConfigUnit{
-		system.Etcd{Etcd: cfg.CoreOS.Etcd},
-		system.Etcd2{Etcd2: cfg.CoreOS.Etcd2},
-		system.Fleet{Fleet: cfg.CoreOS.Fleet},
-		system.Locksmith{Locksmith: cfg.CoreOS.Locksmith},
-		system.Update{Update: cfg.CoreOS.Update, ReadConfig: system.DefaultReadConfig},
-	} {
-		units = append(units, ccu.Units()...)
-	}
+	// for _, ccu := range []CloudConfigUnit{
+	// 	system.Etcd{Etcd: cfg.CoreOS.Etcd},
+	// 	system.Etcd2{Etcd2: cfg.CoreOS.Etcd2},
+	// 	system.Fleet{Fleet: cfg.CoreOS.Fleet},
+	// 	system.Locksmith{Locksmith: cfg.CoreOS.Locksmith},
+	// 	system.Update{Update: cfg.CoreOS.Update, ReadConfig: system.DefaultReadConfig},
+	// } {
+	// 	units = append(units, ccu.Units()...)
+	// }
 
 	wroteEnvironment := false
 	for _, file := range writeFiles {
@@ -166,15 +166,16 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 		}
 	}
 
-	if len(ifaces) > 0 {
-		units = append(units, createNetworkingUnits(ifaces)...)
-		if err := system.RestartNetwork(ifaces); err != nil {
-			return err
-		}
-	}
+	// if len(ifaces) > 0 {
+	// 	units = append(units, createNetworkingUnits(ifaces)...)
+	// 	if err := system.RestartNetwork(ifaces); err != nil {
+	// 		return err
+	// 	}
+	// }
 
-	um := system.NewUnitManager(env.Root())
-	return processUnits(units, env.Root(), um)
+	return nil
+	// um := system.NewUnitManager(env.Root())
+	// return processUnits(units, env.Root(), um)
 }
 
 func createNetworkingUnits(interfaces []network.InterfaceGenerator) (units []system.Unit) {
