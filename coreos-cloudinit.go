@@ -38,10 +38,8 @@ import (
 	"github.com/coreos/coreos-cloudinit/datasource/metadata/packet"
 	"github.com/coreos/coreos-cloudinit/datasource/proc_cmdline"
 	"github.com/coreos/coreos-cloudinit/datasource/url"
-	//"github.com/coreos/coreos-cloudinit/datasource/vmware"
 	"github.com/coreos/coreos-cloudinit/datasource/waagent"
 	"github.com/coreos/coreos-cloudinit/initialize"
-	"github.com/coreos/coreos-cloudinit/network"
 	"github.com/coreos/coreos-cloudinit/pkg"
 	"github.com/coreos/coreos-cloudinit/system"
 )
@@ -230,9 +228,9 @@ func main() {
 	var ccu *config.CloudConfig
 	var script *config.Script
 	switch ud, err := initialize.ParseUserData(userdata); err {
-	case initialize.ErrIgnitionConfig:
-		fmt.Printf("Detected an Ignition config. Exiting...")
-		os.Exit(0)
+	// case initialize.ErrIgnitionConfig:
+	// 	fmt.Printf("Detected an Ignition config. Exiting...")
+	// 	os.Exit(0)
 	case nil:
 		switch t := ud.(type) {
 		case *config.CloudConfig:
@@ -248,24 +246,24 @@ func main() {
 	log.Println("Merging cloud-config from meta-data and user-data")
 	cc := mergeConfigs(ccu, metadata)
 
-	var ifaces []network.InterfaceGenerator
-	if flags.convertNetconf != "" {
-		var err error
-		switch flags.convertNetconf {
-		case "debian":
-			ifaces, err = network.ProcessDebianNetconf(metadata.NetworkConfig.([]byte))
-		case "packet":
-			ifaces, err = network.ProcessPacketNetconf(metadata.NetworkConfig.(packet.NetworkData))
-		// case "vmware":
-		// 	ifaces, err = network.ProcessVMwareNetconf(metadata.NetworkConfig.(map[string]string))
-		default:
-			err = fmt.Errorf("Unsupported network config format %q", flags.convertNetconf)
-		}
-		if err != nil {
-			log.Printf("Failed to generate interfaces: %v\n", err)
-			os.Exit(1)
-		}
-	}
+	// var ifaces []network.InterfaceGenerator
+	// if flags.convertNetconf != "" {
+	// 	var err error
+	// 	switch flags.convertNetconf {
+	// 	case "debian":
+	// 		ifaces, err = network.ProcessDebianNetconf(metadata.NetworkConfig.([]byte))
+	// 	case "packet":
+	// 		ifaces, err = network.ProcessPacketNetconf(metadata.NetworkConfig.(packet.NetworkData))
+	// 	// case "vmware":
+	// 	// 	ifaces, err = network.ProcessVMwareNetconf(metadata.NetworkConfig.(map[string]string))
+	// 	default:
+	// 		err = fmt.Errorf("Unsupported network config format %q", flags.convertNetconf)
+	// 	}
+	// 	if err != nil {
+	// 		log.Printf("Failed to generate interfaces: %v\n", err)
+	// 		os.Exit(1)
+	// 	}
+	// }
 
 	if err = initialize.Apply(cc, ifaces, env); err != nil {
 		log.Printf("Failed to apply cloud-config: %v\n", err)
