@@ -32,55 +32,61 @@ func UserExists(u *config.User) bool {
 func CreateUser(u *config.User) error {
 	args := []string{}
 
-	if u.PasswordHash != "" {
-		args = append(args, "--password", u.PasswordHash)
-	} else {
-		args = append(args, "--password", "*")
-	}
-
 	if u.GECOS != "" {
-		args = append(args, "--comment", fmt.Sprintf("%q", u.GECOS))
+		args = append(args, "-g", fmt.Sprintf("%q", u.GECOS))
 	}
 
 	if u.Homedir != "" {
-		args = append(args, "--home-dir", u.Homedir)
+		args = append(args, "-h", u.Homedir)
 	}
 
 	if u.NoCreateHome {
-		args = append(args, "--no-create-home")
-	} else {
-		args = append(args, "--create-home")
+		args = append(args, "-H")
 	}
 
 	if u.PrimaryGroup != "" {
-		args = append(args, "--gid", u.PrimaryGroup)
-	}
-
-	if len(u.Groups) > 0 {
-		args = append(args, "--groups", strings.Join(u.Groups, ","))
-	}
-
-	if u.NoUserGroup {
-		args = append(args, "--no-user-group")
+		args = append(args, "-G", u.PrimaryGroup)
 	}
 
 	if u.System {
-		args = append(args, "--system")
+		args = append(args, "-S")
 	}
-
-	if u.NoLogInit {
-		args = append(args, "--no-log-init")
-	}
+	// if u.PasswordHash != "" {
+	// 	args = append(args, "--password", u.PasswordHash)
+	// } else {
+	// 	args = append(args, "--password", "*")
+	// }
+	// if u.NoUserGroup {
+	// 	args = append(args, "--no-user-group")
+	// }
+	// if u.NoLogInit {
+	// 	args = append(args, "--no-log-init")
+	// }
 
 	if u.Shell != "" {
-		args = append(args, "--shell", u.Shell)
+		args = append(args, "-s", u.Shell)
 	}
 
 	args = append(args, u.Name)
 
-	output, err := exec.Command("useradd", args...).CombinedOutput()
+	output, err := exec.Command("adduser", args...).CombinedOutput()
 	if err != nil {
 		log.Printf("Command 'useradd %s' failed: %v\n%s", strings.Join(args, " "), err, output)
+	}
+	if len(u.Groups) > 0 {
+		for _, group := range u.Groups {
+			args := []string{u.Name, group}
+			output, err := exec.Command("adduser", args...).CombinedOutput()
+			if err != nil {
+				log.Printf("Command 'adduser %s' failed: %v\n%s", strings.Join(args, " "), err, output)
+			}
+		}
+	}
+	if u.PasswordHash != "" {
+		err := SetUserPassword(u.Name, u.PasswordHash)
+		if err != nil {
+			log.Printf("Error setting password for %s: %v\n", u.Name, err)
+		}
 	}
 	return err
 }

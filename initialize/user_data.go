@@ -30,6 +30,8 @@ func ParseUserData(contents string) (interface{}, error) {
 		return nil, nil
 	}
 
+	cc, err := config.NewCloudConfig(contents)
+
 	switch {
 	case config.IsScript(contents):
 		log.Printf("Parsing user-data as script")
@@ -46,8 +48,8 @@ func ParseUserData(contents string) (interface{}, error) {
 		}
 
 		return cc, nil
-	case config.IsIgnitionConfig(contents):
-		return nil, ErrIgnitionConfig
+	// case config.IsIgnitionConfig(contents):
+	// 	return nil, ErrIgnitionConfig
 	default:
 		return nil, errors.New("Unrecognized user-data format")
 	}
