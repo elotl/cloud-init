@@ -27,6 +27,6 @@ func SSHImportGithubUser(system_user string, github_user string) error {
 		return err
 	}
 
-	key_name := fmt.Sprintf("github-%s", github_user)
-	return system.AuthorizeSSHKeys(system_user, key_name, keys)
+	//key_name := fmt.Sprintf("github-%s", github_user)
+	return system.AuthorizeSSHKeys(system_user, keys)
 }

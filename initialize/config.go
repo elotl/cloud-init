@@ -75,7 +75,8 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 
 		if len(user.SSHAuthorizedKeys) > 0 {
 			log.Printf("Authorizing %d SSH keys for user '%s'", len(user.SSHAuthorizedKeys), user.Name)
-			if err := system.AuthorizeSSHKeys(user.Name, env.SSHKeyName(), user.SSHAuthorizedKeys); err != nil {
+			if err := system.AuthorizeSSHKeys(user.Name, user.SSHAuthorizedKeys); err != nil {
+				log.Printf("Error Authorizing SSH keys for user '%s: %v'", user.Name, err)
 				return err
 			}
 		}
@@ -100,7 +101,7 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 	}
 
 	if len(cfg.SSHAuthorizedKeys) > 0 {
-		err := system.AuthorizeSSHKeys("core", env.SSHKeyName(), cfg.SSHAuthorizedKeys)
+		err := system.AuthorizeSSHKeys("root", cfg.SSHAuthorizedKeys)
 		if err == nil {
 			log.Printf("Authorized SSH keys for core user")
 		} else {
