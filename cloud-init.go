@@ -26,22 +26,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coreos/coreos-cloudinit/config"
-	"github.com/coreos/coreos-cloudinit/config/validate"
-	"github.com/coreos/coreos-cloudinit/datasource"
-	"github.com/coreos/coreos-cloudinit/datasource/configdrive"
-	"github.com/coreos/coreos-cloudinit/datasource/file"
-	"github.com/coreos/coreos-cloudinit/datasource/metadata/cloudsigma"
-	"github.com/coreos/coreos-cloudinit/datasource/metadata/digitalocean"
-	"github.com/coreos/coreos-cloudinit/datasource/metadata/ec2"
-	"github.com/coreos/coreos-cloudinit/datasource/metadata/gce"
-	"github.com/coreos/coreos-cloudinit/datasource/metadata/packet"
-	"github.com/coreos/coreos-cloudinit/datasource/proc_cmdline"
-	"github.com/coreos/coreos-cloudinit/datasource/url"
-	"github.com/coreos/coreos-cloudinit/datasource/waagent"
-	"github.com/coreos/coreos-cloudinit/initialize"
-	"github.com/coreos/coreos-cloudinit/pkg"
-	"github.com/coreos/coreos-cloudinit/system"
+	"github.com/elotl/cloud-init/config"
+	"github.com/elotl/cloud-init/config/validate"
+	"github.com/elotl/cloud-init/datasource"
+	"github.com/elotl/cloud-init/datasource/configdrive"
+	"github.com/elotl/cloud-init/datasource/file"
+	"github.com/elotl/cloud-init/datasource/metadata/cloudsigma"
+	"github.com/elotl/cloud-init/datasource/metadata/digitalocean"
+	"github.com/elotl/cloud-init/datasource/metadata/ec2"
+	"github.com/elotl/cloud-init/datasource/metadata/gce"
+	"github.com/elotl/cloud-init/datasource/metadata/packet"
+	"github.com/elotl/cloud-init/datasource/proc_cmdline"
+	"github.com/elotl/cloud-init/datasource/url"
+	"github.com/elotl/cloud-init/datasource/waagent"
+	"github.com/elotl/cloud-init/initialize"
+	"github.com/elotl/cloud-init/network"
+	"github.com/elotl/cloud-init/pkg"
+	"github.com/elotl/cloud-init/system"
 )
 
 const (
@@ -246,7 +247,7 @@ func main() {
 	log.Println("Merging cloud-config from meta-data and user-data")
 	cc := mergeConfigs(ccu, metadata)
 
-	// var ifaces []network.InterfaceGenerator
+	var ifaces []network.InterfaceGenerator
 	// if flags.convertNetconf != "" {
 	// 	var err error
 	// 	switch flags.convertNetconf {

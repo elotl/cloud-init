@@ -18,7 +18,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 )
 
 var (
@@ -30,7 +30,7 @@ func ParseUserData(contents string) (interface{}, error) {
 		return nil, nil
 	}
 
-	cc, err := config.NewCloudConfig(contents)
+	//cc, err := config.NewCloudConfig(contents)
 
 	switch {
 	case config.IsScript(contents):

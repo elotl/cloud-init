@@ -17,7 +17,7 @@ package test
 import (
 	"fmt"
 
-	"github.com/coreos/coreos-cloudinit/pkg"
+	"github.com/elotl/cloud-init/pkg"
 )
 
 type HttpClient struct {

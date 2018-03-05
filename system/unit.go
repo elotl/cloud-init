@@ -20,7 +20,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 )
 
 type UnitManager interface {

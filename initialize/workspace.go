@@ -19,8 +19,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/coreos/coreos-cloudinit/config"
-	"github.com/coreos/coreos-cloudinit/system"
+	"github.com/elotl/cloud-init/config"
+	"github.com/elotl/cloud-init/system"
 )
 
 func PrepWorkspace(workspace string) error {

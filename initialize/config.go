@@ -20,9 +20,9 @@ import (
 	"log"
 	"path"
 
-	"github.com/coreos/coreos-cloudinit/config"
-	"github.com/coreos/coreos-cloudinit/network"
-	"github.com/coreos/coreos-cloudinit/system"
+	"github.com/elotl/cloud-init/config"
+	"github.com/elotl/cloud-init/network"
+	"github.com/elotl/cloud-init/system"
 )
 
 // CloudConfigFile represents a CoreOS specific configuration option that can generate

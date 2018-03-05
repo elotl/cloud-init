@@ -17,7 +17,7 @@ package initialize
 import (
 	"fmt"
 
-	"github.com/coreos/coreos-cloudinit/system"
+	"github.com/elotl/cloud-init/system"
 )
 
 func SSHImportGithubUser(system_user string, github_user string) error {

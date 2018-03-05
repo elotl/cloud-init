@@ -18,7 +18,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 )
 
 // flannel is a top-level structure which embeds its underlying configuration,

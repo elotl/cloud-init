@@ -21,7 +21,7 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 )
 
 func UserExists(u *config.User) bool {

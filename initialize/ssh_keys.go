@@ -18,8 +18,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/coreos/coreos-cloudinit/pkg"
-	"github.com/coreos/coreos-cloudinit/system"
+	"github.com/elotl/cloud-init/pkg"
+	"github.com/elotl/cloud-init/system"
 )
 
 type UserKey struct {

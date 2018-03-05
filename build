@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-NAME="coreos-cloudinit"
-ORG_PATH="github.com/coreos"
+NAME="cloud-init"
+ORG_PATH="github.com/elotl"
 REPO_PATH="${ORG_PATH}/${NAME}"
 VERSION=$(git describe --dirty --tags)
 GLDFLAGS="-X main.version=\"${VERSION}\""
@@ -11,7 +11,7 @@ if [ ! -h gopath/src/${REPO_PATH} ]; then
 	ln -s ../../../.. gopath/src/${REPO_PATH} || exit 255
 fi
 
-export GOBIN=${PWD}/bin
-export GOPATH=${PWD}/gopath
+export GOBIN=${PWD}
+# export GOPATH=${PWD}/gopath
 
 CGO_ENABLED=0 GOOS=linux go build -ldflags '-extldflags "-static"'  -o ${GOBIN}/${NAME} ${REPO_PATH}

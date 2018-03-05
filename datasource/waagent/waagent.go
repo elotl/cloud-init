@@ -22,7 +22,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/coreos/coreos-cloudinit/datasource"
+	"github.com/elotl/cloud-init/datasource"
 )
 
 type waagent struct {

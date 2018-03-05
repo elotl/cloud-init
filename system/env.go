@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 )
 
 // serviceContents generates the contents for a drop-in unit given the config.

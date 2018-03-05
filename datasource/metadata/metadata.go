@@ -18,7 +18,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/coreos/coreos-cloudinit/pkg"
+	"github.com/elotl/cloud-init/pkg"
 )
 
 type MetadataService struct {

@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 
 	"github.com/coreos/yaml"
 )

@@ -17,7 +17,7 @@ package network
 import (
 	"net"
 
-	"github.com/coreos/coreos-cloudinit/datasource/metadata/packet"
+	"github.com/elotl/cloud-init/datasource/metadata/packet"
 )
 
 func ProcessPacketNetconf(netdata packet.NetworkData) ([]InterfaceGenerator, error) {

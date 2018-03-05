@@ -15,7 +15,7 @@
 package system
 
 import (
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 )
 
 // Etcd2 is a top-level structure which embeds its underlying configuration,

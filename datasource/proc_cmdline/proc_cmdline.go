@@ -20,8 +20,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/coreos/coreos-cloudinit/datasource"
-	"github.com/coreos/coreos-cloudinit/pkg"
+	"github.com/elotl/cloud-init/datasource"
+	"github.com/elotl/cloud-init/pkg"
 )
 
 const (

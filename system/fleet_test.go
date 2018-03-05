@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/coreos/coreos-cloudinit/config"
+	"github.com/elotl/cloud-init/config"
 )
 
 func TestFleetUnits(t *testing.T) {

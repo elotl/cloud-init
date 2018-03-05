@@ -65,7 +65,7 @@ func AuthorizeSSHKeys2(username string, keysName string, keys []string) error {
 		contents, err := ioutil.ReadFile(sshfile)
 		if err != nil {
 			fmt.Println("Error reading sshfile at:", sshfile, err)
-		} else if contents[len(contents)-1] != "\n" {
+		} else if contents[len(contents)-1] != byte('\n') {
 			addTrailingNewline = true
 		}
 	}
