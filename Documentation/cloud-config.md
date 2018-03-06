@@ -347,7 +347,7 @@ coreos:
 
 ### ssh_authorized_keys
 
-The `ssh_authorized_keys` parameter adds public SSH keys which will be authorized for the `core` user.
+The `ssh_authorized_keys` parameter adds public SSH keys which will be authorized for the `root` user.
 
 The keys will be named "coreos-cloudinit" by default.
 Override this by using the `--ssh-key-name` flag when calling `coreos-cloudinit`.

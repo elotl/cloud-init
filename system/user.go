@@ -67,13 +67,16 @@ func CreateUser(u *config.User) error {
 		args = append(args, "-s", u.Shell)
 	}
 
+	args = append(args, "-D")
 	args = append(args, u.Name)
 
+	fmt.Println("adduser", args)
 	output, err := exec.Command("adduser", args...).CombinedOutput()
 	if err != nil {
 		log.Printf("Command 'useradd %s' failed: %v\n%s", strings.Join(args, " "), err, output)
 	}
 	if len(u.Groups) > 0 {
+		fmt.Println("got groups: ", u.Groups)
 		for _, group := range u.Groups {
 			args := []string{u.Name, group}
 			output, err := exec.Command("adduser", args...).CombinedOutput()
@@ -101,18 +104,24 @@ func SetUserPassword(user, hash string) error {
 
 	err = cmd.Start()
 	if err != nil {
+		fmt.Println("Error in start")
 		return err
 	}
 
 	arg := fmt.Sprintf("%s:%s", user, hash)
 	_, err = stdin.Write([]byte(arg))
 	if err != nil {
+		fmt.Println("Error writing to pipe")
 		return err
 	}
-	stdin.Close()
+	err = stdin.Close()
+	if err != nil {
+		fmt.Println("Error closing")
+	}
 
 	err = cmd.Wait()
 	if err != nil {
+		fmt.Println("Error writing to pipe")
 		return err
 	}
 
