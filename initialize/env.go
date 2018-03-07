@@ -45,10 +45,10 @@ func NewEnvironment(root, configRoot, workspace, sshKeyName string, metadata dat
 		return ip.String()
 	}
 	substitutions := map[string]string{
-		"$public_ipv4":  firstNonNull(metadata.PublicIPv4, os.Getenv("COREOS_PUBLIC_IPV4")),
-		"$private_ipv4": firstNonNull(metadata.PrivateIPv4, os.Getenv("COREOS_PRIVATE_IPV4")),
-		"$public_ipv6":  firstNonNull(metadata.PublicIPv6, os.Getenv("COREOS_PUBLIC_IPV6")),
-		"$private_ipv6": firstNonNull(metadata.PrivateIPv6, os.Getenv("COREOS_PRIVATE_IPV6")),
+		"$public_ipv4":  firstNonNull(metadata.PublicIPv4, os.Getenv("MILPA_PUBLIC_IPV4")),
+		"$private_ipv4": firstNonNull(metadata.PrivateIPv4, os.Getenv("MILPA_PRIVATE_IPV4")),
+		"$public_ipv6":  firstNonNull(metadata.PublicIPv6, os.Getenv("MILPA_PUBLIC_IPV6")),
+		"$private_ipv6": firstNonNull(metadata.PrivateIPv6, os.Getenv("MILPA_PRIVATE_IPV6")),
 	}
 	return &Environment{root, configRoot, workspace, sshKeyName, substitutions}
 }
@@ -97,16 +97,16 @@ func (e *Environment) DefaultEnvironmentFile() *system.EnvFile {
 		Vars: map[string]string{},
 	}
 	if ip, ok := e.substitutions["$public_ipv4"]; ok && len(ip) > 0 {
-		ef.Vars["COREOS_PUBLIC_IPV4"] = ip
+		ef.Vars["MILPA_PUBLIC_IPV4"] = ip
 	}
 	if ip, ok := e.substitutions["$private_ipv4"]; ok && len(ip) > 0 {
-		ef.Vars["COREOS_PRIVATE_IPV4"] = ip
+		ef.Vars["MILPA_PRIVATE_IPV4"] = ip
 	}
 	if ip, ok := e.substitutions["$public_ipv6"]; ok && len(ip) > 0 {
-		ef.Vars["COREOS_PUBLIC_IPV6"] = ip
+		ef.Vars["MILPA_PUBLIC_IPV6"] = ip
 	}
 	if ip, ok := e.substitutions["$private_ipv6"]; ok && len(ip) > 0 {
-		ef.Vars["COREOS_PRIVATE_IPV6"] = ip
+		ef.Vars["MILPA_PRIVATE_IPV6"] = ip
 	}
 	if len(ef.Vars) == 0 {
 		return nil

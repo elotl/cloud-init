@@ -103,14 +103,26 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 	if len(cfg.SSHAuthorizedKeys) > 0 {
 		err := system.AuthorizeSSHKeys("root", cfg.SSHAuthorizedKeys)
 		if err == nil {
-			log.Printf("Authorized SSH keys for core user")
+			log.Printf("Authorized SSH keys for root user")
 		} else {
 			return err
 		}
 	}
 
+	if len(cfg.RunScript) > 0 {
+		err := system.RunScript(cfg.RunScript)
+		if err == nil {
+			log.Printf("Successfully ran script")
+		} else {
+			return fmt.Errorf("Error running script: %v", cfg.RunScript)
+		}
+	}
+
 	var writeFiles []system.File
 	for _, file := range cfg.WriteFiles {
+		writeFiles = append(writeFiles, system.File{File: file})
+	}
+	for _, file := range cfg.MilpaFiles {
 		writeFiles = append(writeFiles, system.File{File: file})
 	}
 

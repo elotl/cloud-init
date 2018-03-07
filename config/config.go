@@ -34,6 +34,11 @@ type CloudConfig struct {
 	Hostname          string   `yaml:"hostname"`
 	Users             []User   `yaml:"users"`
 	ManageEtcHosts    EtcHosts `yaml:"manage_etc_hosts"`
+	RunScript         string   `yaml:"runscript"`
+	MilpaFiles        []File   `yaml:"milpa_files"`
+	// todo:
+	// MilpaFiles
+	// MilpaCerts
 }
 
 type CoreOS struct {
@@ -65,6 +70,7 @@ func NewCloudConfig(contents string) (*CloudConfig, error) {
 	}
 	var cfg CloudConfig
 	err := yaml.Unmarshal([]byte(contents), &cfg)
+	//fmt.Printf("%+v\n", cfg)
 	return &cfg, err
 }
 

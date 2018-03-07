@@ -186,7 +186,8 @@ func ExecuteScript(scriptPath string) (string, error) {
 }
 
 func SetHostname(hostname string) error {
-	return exec.Command("hostnamectl", "set-hostname", hostname).Run()
+	fmt.Println("Setting hostname to", hostname)
+	return exec.Command("hostname", hostname).Run()
 }
 
 func Hostname() (string, error) {

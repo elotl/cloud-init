@@ -16,7 +16,6 @@ package initialize
 
 import (
 	"errors"
-	"log"
 
 	"github.com/elotl/cloud-init/config"
 )
@@ -30,27 +29,36 @@ func ParseUserData(contents string) (interface{}, error) {
 		return nil, nil
 	}
 
-	//cc, err := config.NewCloudConfig(contents)
-
-	switch {
-	case config.IsScript(contents):
-		log.Printf("Parsing user-data as script")
-		return config.NewScript(contents)
-	case config.IsCloudConfig(contents):
-		log.Printf("Parsing user-data as cloud-config")
-		cc, err := config.NewCloudConfig(contents)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := cc.Decode(); err != nil {
-			return nil, err
-		}
-
-		return cc, nil
-	// case config.IsIgnitionConfig(contents):
-	// 	return nil, ErrIgnitionConfig
-	default:
-		return nil, errors.New("Unrecognized user-data format")
+	cc, err := config.NewCloudConfig(contents)
+	if err != nil {
+		return nil, err
 	}
+
+	if err := cc.Decode(); err != nil {
+		return nil, err
+	}
+
+	return cc, nil
+
+	// switch {
+	// case config.IsScript(contents):
+	// 	log.Printf("Parsing user-data as script")
+	// 	return config.NewScript(contents)
+	// case config.IsCloudConfig(contents):
+	// 	log.Printf("Parsing user-data as cloud-config")
+	// 	cc, err := config.NewCloudConfig(contents)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	if err := cc.Decode(); err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	return cc, nil
+	// // case config.IsIgnitionConfig(contents):
+	// // 	return nil, ErrIgnitionConfig
+	// default:
+	// 	return nil, errors.New("Unrecognized user-data format")
+	// }
 }

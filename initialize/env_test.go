@@ -26,10 +26,10 @@ import (
 )
 
 func TestEnvironmentApply(t *testing.T) {
-	os.Setenv("COREOS_PUBLIC_IPV4", "1.2.3.4")
-	os.Setenv("COREOS_PRIVATE_IPV4", "5.6.7.8")
-	os.Setenv("COREOS_PUBLIC_IPV6", "1234::")
-	os.Setenv("COREOS_PRIVATE_IPV6", "5678::")
+	os.Setenv("MILPA_PUBLIC_IPV4", "1.2.3.4")
+	os.Setenv("MILPA_PRIVATE_IPV4", "5.6.7.8")
+	os.Setenv("MILPA_PUBLIC_IPV6", "1234::")
+	os.Setenv("MILPA_PRIVATE_IPV6", "5678::")
 	for _, tt := range []struct {
 		metadata datasource.Metadata
 		input    string
@@ -110,7 +110,7 @@ func TestEnvironmentFile(t *testing.T) {
 		PublicIPv6:  net.ParseIP("1234::"),
 		PrivateIPv6: net.ParseIP("5678::"),
 	}
-	expect := "COREOS_PRIVATE_IPV4=5.6.7.8\nCOREOS_PRIVATE_IPV6=5678::\nCOREOS_PUBLIC_IPV4=1.2.3.4\nCOREOS_PUBLIC_IPV6=1234::\n"
+	expect := "MILPA_PRIVATE_IPV4=5.6.7.8\nMILPA_PRIVATE_IPV6=5678::\nMILPA_PUBLIC_IPV4=1.2.3.4\nMILPA_PUBLIC_IPV6=1234::\n"
 
 	dir, err := ioutil.TempDir(os.TempDir(), "coreos-cloudinit-")
 	if err != nil {
