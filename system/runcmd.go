@@ -19,6 +19,6 @@ func RunScript(script string) error {
 	if err != nil {
 		return fmt.Errorf("")
 	}
-	fmt.Println("Ran script, the output was", output)
+	fmt.Println("Ran script, the output was", string(output))
 	return nil
 }
