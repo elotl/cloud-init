@@ -23,6 +23,7 @@ import (
 	"github.com/elotl/cloud-init/config"
 	"github.com/elotl/cloud-init/network"
 	"github.com/elotl/cloud-init/system"
+	aggerr "github.com/elotl/cloud-init/util/errors"
 )
 
 // CloudConfigFile represents a CoreOS specific configuration option that can generate
@@ -43,11 +44,47 @@ type CloudConfigUnit interface {
 // configuring the hostname, adding new users, writing various configuration
 // files to disk, and manipulating systemd services.
 func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Environment) error {
+	// We write files first since those are our most important
+	// pieces for itzo (they carry the certs).
+	var writeFiles []system.File
+	for _, file := range cfg.WriteFiles {
+		writeFiles = append(writeFiles, system.File{File: file})
+	}
+	for _, file := range cfg.MilpaFiles {
+		writeFiles = append(writeFiles, system.File{File: file})
+	}
+
+	wroteEnvironment := false
+	allErrors := []error{}
+	for _, file := range writeFiles {
+		fullPath, err := system.WriteFile(&file, env.Root())
+		if err != nil {
+			allErrors = append(allErrors, err)
+			continue
+		}
+		if path.Clean(file.Path) == "/etc/environment" {
+			wroteEnvironment = true
+		}
+		log.Printf("Wrote file %s to filesystem", fullPath)
+	}
+
+	if !wroteEnvironment {
+		ef := env.DefaultEnvironmentFile()
+		if ef != nil {
+			err := system.WriteEnvFile(ef, env.Root())
+			if err != nil {
+				allErrors = append(allErrors, err)
+			}
+			log.Printf("Updated /etc/environment")
+		}
+	}
+
 	if cfg.Hostname != "" {
 		if err := system.SetHostname(cfg.Hostname); err != nil {
-			return err
+			allErrors = append(allErrors, err)
+		} else {
+			log.Printf("Set hostname to %s", cfg.Hostname)
 		}
-		log.Printf("Set hostname to %s", cfg.Hostname)
 	}
 
 	for _, user := range cfg.Users {
@@ -62,14 +99,14 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 				log.Printf("Setting '%s' user's password", user.Name)
 				if err := system.SetUserPassword(user.Name, user.PasswordHash); err != nil {
 					log.Printf("Failed setting '%s' user's password: %v", user.Name, err)
-					return err
+					allErrors = append(allErrors, err)
 				}
 			}
 		} else {
 			log.Printf("Creating user '%s'", user.Name)
 			if err := system.CreateUser(&user); err != nil {
 				log.Printf("Failed creating user '%s': %v", user.Name, err)
-				return err
+				allErrors = append(allErrors, err)
 			}
 		}
 
@@ -77,7 +114,7 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 			log.Printf("Authorizing %d SSH keys for user '%s'", len(user.SSHAuthorizedKeys), user.Name)
 			if err := system.AuthorizeSSHKeys(user.Name, user.SSHAuthorizedKeys); err != nil {
 				log.Printf("Error Authorizing SSH keys for user '%s: %v'", user.Name, err)
-				return err
+				allErrors = append(allErrors, err)
 			}
 		}
 		// if user.SSHImportGithubUser != "" {
@@ -102,28 +139,21 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 
 	if len(cfg.SSHAuthorizedKeys) > 0 {
 		err := system.AuthorizeSSHKeys("root", cfg.SSHAuthorizedKeys)
-		if err == nil {
-			log.Printf("Authorized SSH keys for root user")
+		if err != nil {
+			allErrors = append(allErrors, err)
 		} else {
-			return err
+			log.Printf("Authorized SSH keys for root user")
 		}
 	}
 
 	if len(cfg.RunScript) > 0 {
 		err := system.RunScript(cfg.RunScript)
-		if err == nil {
-			log.Printf("Successfully ran script")
+		if err != nil {
+			log.Printf("Error running user script, trying to continue")
+			allErrors = append(allErrors, err)
 		} else {
-			return fmt.Errorf("Error running script: %v", cfg.RunScript)
+			log.Printf("Successfully ran script")
 		}
-	}
-
-	var writeFiles []system.File
-	for _, file := range cfg.WriteFiles {
-		writeFiles = append(writeFiles, system.File{File: file})
-	}
-	for _, file := range cfg.MilpaFiles {
-		writeFiles = append(writeFiles, system.File{File: file})
 	}
 
 	// for _, ccf := range []CloudConfigFile{
@@ -156,29 +186,6 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 	// 	units = append(units, ccu.Units()...)
 	// }
 
-	wroteEnvironment := false
-	for _, file := range writeFiles {
-		fullPath, err := system.WriteFile(&file, env.Root())
-		if err != nil {
-			return err
-		}
-		if path.Clean(file.Path) == "/etc/environment" {
-			wroteEnvironment = true
-		}
-		log.Printf("Wrote file %s to filesystem", fullPath)
-	}
-
-	if !wroteEnvironment {
-		ef := env.DefaultEnvironmentFile()
-		if ef != nil {
-			err := system.WriteEnvFile(ef, env.Root())
-			if err != nil {
-				return err
-			}
-			log.Printf("Updated /etc/environment")
-		}
-	}
-
 	// if len(ifaces) > 0 {
 	// 	units = append(units, createNetworkingUnits(ifaces)...)
 	// 	if err := system.RestartNetwork(ifaces); err != nil {
@@ -186,7 +193,12 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 	// 	}
 	// }
 
-	return nil
+	if len(allErrors) > 0 {
+		aggregateErr := aggerr.NewAggregate(allErrors)
+		return aggregateErr
+	} else {
+		return nil
+	}
 	// um := system.NewUnitManager(env.Root())
 	// return processUnits(units, env.Root(), um)
 }
