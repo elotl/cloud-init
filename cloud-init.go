@@ -46,8 +46,11 @@ import (
 )
 
 const (
-	datasourceInterval    = 100 * time.Millisecond
-	datasourceMaxInterval = 30 * time.Second
+	datasourceInterval = 100 * time.Millisecond
+	// We don't want to wait a lot of time for this to come up so just
+	// check every 5 seconds and don't wait longer (checking doesn't have
+	// too much of an impact on us)
+	datasourceMaxInterval = 5 * time.Second
 	datasourceTimeout     = 5 * time.Minute
 )
 
@@ -84,7 +87,7 @@ func init() {
 	flag.BoolVar(&flags.ignoreFailure, "ignore-failure", false, "Exits with 0 status in the event of malformed input from user-data")
 	flag.StringVar(&flags.sources.file, "from-file", "", "Read user-data from provided file")
 	//flag.StringVar(&flags.sources.configDrive, "from-configdrive", "", "Read data from provided cloud-drive directory")
-	//flag.StringVar(&flags.sources.waagent, "from-waagent", "", "Read data from provided waagent directory")
+	flag.StringVar(&flags.sources.waagent, "from-waagent", "", "Read data from provided waagent directory")
 	flag.BoolVar(&flags.sources.metadataService, "from-metadata-service", false, "[DEPRECATED - Use -from-ec2-metadata] Download data from metadata service")
 	flag.StringVar(&flags.sources.ec2MetadataService, "from-ec2-metadata", "", "Download EC2 data from the provided url")
 	flag.StringVar(&flags.sources.gceMetadataService, "from-gce-metadata", "", "Download GCE data from the provided url")
