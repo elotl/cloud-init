@@ -14,4 +14,4 @@ fi
 export GOBIN=${PWD}
 # export GOPATH=${PWD}/gopath
 
-CGO_ENABLED=0 GOOS=linux go build -ldflags '-extldflags "-static"'  -o ${GOBIN}/${NAME} ${REPO_PATH}
+CGO_ENABLED=0 GOOS=linux go build -ldflags '-extldflags "-static"' -o ${GOBIN}/${NAME} ${REPO_PATH}
