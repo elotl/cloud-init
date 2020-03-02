@@ -18,6 +18,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 
@@ -47,28 +48,28 @@ func (ms metadataService) FetchMetadata() (datasource.Metadata, error) {
 	// BCox 2/5/19 - Commented out getting keys from EC2 metadata since
 	// that'll prevent random users from starting our Public AMIs.
 
-	// if keynames, err := ms.fetchAttributes(fmt.Sprintf("%s/public-keys", ms.MetadataUrl())); err == nil {
-	// 	keyIDs := make(map[string]string)
-	// 	for _, keyname := range keynames {
-	// 		tokens := strings.SplitN(keyname, "=", 2)
-	// 		if len(tokens) != 2 {
-	// 			return metadata, fmt.Errorf("malformed public key: %q", keyname)
-	// 		}
-	// 		keyIDs[tokens[1]] = tokens[0]
-	// 	}
+	if keynames, err := ms.fetchAttributes(fmt.Sprintf("%s/public-keys", ms.MetadataUrl())); err == nil {
+		keyIDs := make(map[string]string)
+		for _, keyname := range keynames {
+			tokens := strings.SplitN(keyname, "=", 2)
+			if len(tokens) != 2 {
+				return metadata, fmt.Errorf("malformed public key: %q", keyname)
+			}
+			keyIDs[tokens[1]] = tokens[0]
+		}
 
-	// 	metadata.SSHPublicKeys = map[string]string{}
-	// 	for name, id := range keyIDs {
-	// 		sshkey, err := ms.fetchAttribute(fmt.Sprintf("%s/public-keys/%s/openssh-key", ms.MetadataUrl(), id))
-	// 		if err != nil {
-	// 			return metadata, err
-	// 		}
-	// 		metadata.SSHPublicKeys[name] = sshkey
-	// 		log.Printf("Found SSH key for %q\n", name)
-	// 	}
-	// } else if _, ok := err.(pkg.ErrNotFound); !ok {
-	// 	return metadata, err
-	// }
+		metadata.SSHPublicKeys = map[string]string{}
+		for name, id := range keyIDs {
+			sshkey, err := ms.fetchAttribute(fmt.Sprintf("%s/public-keys/%s/openssh-key", ms.MetadataUrl(), id))
+			if err != nil {
+				return metadata, err
+			}
+			metadata.SSHPublicKeys[name] = sshkey
+			log.Printf("Found SSH key for %q\n", name)
+		}
+	} else if _, ok := err.(pkg.ErrNotFound); !ok {
+		return metadata, err
+	}
 
 	if hostname, err := ms.fetchAttribute(fmt.Sprintf("%s/hostname", ms.MetadataUrl())); err == nil {
 		metadata.Hostname = strings.Split(hostname, " ")[0]
