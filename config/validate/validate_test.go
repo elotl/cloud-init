@@ -15,7 +15,6 @@
 package validate
 
 import (
-	"errors"
 	"reflect"
 	"testing"
 )
@@ -50,91 +49,6 @@ func TestParseCloudConfig(t *testing.T) {
 		}
 	}
 }
-
-func TestValidateCloudConfig(t *testing.T) {
-	tests := []struct {
-		config string
-		rules  []rule
-
-		report Report
-		err    error
-	}{
-		{
-			rules: []rule{func(_ node, _ *Report) { panic("something happened") }},
-			err:   errors.New("something happened"),
-		},
-		{
-			config: "write_files:\n  - permissions: 0744",
-			rules:  Rules,
-		},
-		{
-			config: "write_files:\n  - permissions: '0744'",
-			rules:  Rules,
-		},
-		{
-			config: "write_files:\n  - permissions: 744",
-			rules:  Rules,
-		},
-		{
-			config: "write_files:\n  - permissions: '744'",
-			rules:  Rules,
-		},
-		{
-			config: "coreos:\n  update:\n    reboot-strategy: off",
-			rules:  Rules,
-		},
-		{
-			config: "coreos:\n  update:\n    reboot-strategy: false",
-			rules:  Rules,
-			report: Report{entries: []Entry{{entryError, "invalid value false", 3}}},
-		},
-	}
-
-	for _, tt := range tests {
-		r, err := validateCloudConfig([]byte(tt.config), tt.rules)
-		if !reflect.DeepEqual(tt.err, err) {
-			t.Errorf("bad error (%s): want %v, got %v", tt.config, tt.err, err)
-		}
-		if !reflect.DeepEqual(tt.report, r) {
-			t.Errorf("bad report (%s): want %+v, got %+v", tt.config, tt.report, r)
-		}
-	}
-}
-
-// We don't require cloud config to start with #cloud-config...
-
-// func TestValidate(t *testing.T) {
-// 	tests := []struct {
-// 		config string
-
-// 		report Report
-// 	}{
-// 		{},
-// 		{
-// 			config: "#!/bin/bash\necho hey",
-// 		},
-// 		{
-// 			config: "{}",
-// 			report: Report{entries: []Entry{{entryError, `must be "#cloud-config" or begin with "#!"`, 1}}},
-// 		},
-// 		{
-// 			config: `{"ignitionVersion":0}`,
-// 		},
-// 		{
-// 			config: `{"ignitionVersion":1}`,
-// 		},
-// 	}
-
-// 	for i, tt := range tests {
-// 		r, err := Validate([]byte(tt.config))
-// 		if err != nil {
-// 			t.Errorf("bad error (case #%d): want %v, got %v", i, nil, err)
-// 		}
-// 		if !reflect.DeepEqual(tt.report, r) {
-// 			t.Errorf("bad report (case #%d): want %+v, got %+v", i, tt.report, r)
-// 		}
-// 	}
-// }
 
 func BenchmarkValidate(b *testing.B) {
 	config := `#cloud-config

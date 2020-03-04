@@ -111,50 +111,8 @@ func TestCheckStructure(t *testing.T) {
 			config:  "test:",
 			entries: []Entry{{entryWarning, "unrecognized key \"test\"", 1}},
 		},
-		{
-			config:  "coreos:\n  flannel:\n    bad:",
-			entries: []Entry{{entryWarning, "unrecognized key \"bad\"", 3}},
-		},
-		{
-			config: "coreos:\n  flannel:\n    interface: good",
-		},
-
-		// Test for deprecated keys
-		{
-			config:  "coreos:\n  etcd:\n    proxy: hi",
-			entries: []Entry{{entryWarning, "deprecated key \"etcd\" (etcd is no longer shipped in Container Linux)", 2}, {entryWarning, "deprecated key \"proxy\" (etcd2 options no longer work for etcd)", 3}},
-		},
 
 		// Test for error on list of nodes
-		{
-			config: "coreos:\n  units:\n    - hello\n    - goodbye",
-			entries: []Entry{
-				{entryWarning, "incorrect type for \"units[0]\" (want struct)", 3},
-				{entryWarning, "incorrect type for \"units[1]\" (want struct)", 4},
-			},
-		},
-
-		// Test for incorrect types
-		// Want boolean
-		{
-			config: "coreos:\n  units:\n    - enable: true",
-		},
-		{
-			config:  "coreos:\n  units:\n    - enable: 4",
-			entries: []Entry{{entryWarning, "incorrect type for \"enable\" (want bool)", 3}},
-		},
-		{
-			config:  "coreos:\n  units:\n    - enable: bad",
-			entries: []Entry{{entryWarning, "incorrect type for \"enable\" (want bool)", 3}},
-		},
-		{
-			config:  "coreos:\n  units:\n    - enable:\n        bad:",
-			entries: []Entry{{entryWarning, "incorrect type for \"enable\" (want bool)", 3}},
-		},
-		{
-			config:  "coreos:\n  units:\n    - enable:\n      - bad",
-			entries: []Entry{{entryWarning, "incorrect type for \"enable\" (want bool)", 3}},
-		},
 		// Want string
 		{
 			config: "hostname: true",
@@ -173,24 +131,6 @@ func TestCheckStructure(t *testing.T) {
 			config:  "hostname:\n  - name",
 			entries: []Entry{{entryWarning, "incorrect type for \"hostname\" (want string)", 1}},
 		},
-		// Want struct
-		{
-			config:  "coreos: true",
-			entries: []Entry{{entryWarning, "incorrect type for \"coreos\" (want struct)", 1}},
-		},
-		{
-			config:  "coreos: 4",
-			entries: []Entry{{entryWarning, "incorrect type for \"coreos\" (want struct)", 1}},
-		},
-		{
-			config:  "coreos: hello",
-			entries: []Entry{{entryWarning, "incorrect type for \"coreos\" (want struct)", 1}},
-		},
-		{
-			config:  "coreos:\n  - hello",
-			entries: []Entry{{entryWarning, "incorrect type for \"coreos\" (want struct)", 1}},
-		},
-		// Want []string
 		{
 			config:  "ssh_authorized_keys: true",
 			entries: []Entry{{entryWarning, "incorrect type for \"ssh_authorized_keys\" (want []string)", 1}},
@@ -282,34 +222,6 @@ func TestCheckValidity(t *testing.T) {
 			config: "hostname: test",
 		},
 
-		// int
-		{
-			config: "coreos:\n  fleet:\n    verbosity: 2",
-		},
-
-		// bool
-		{
-			config: "coreos:\n  units:\n    - enable: true",
-		},
-
-		// slice
-		{
-			config: "coreos:\n  units:\n    - command: start\n    - name: stop",
-		},
-		{
-			config:  "coreos:\n  units:\n    - command: lol",
-			entries: []Entry{{entryError, "invalid value lol", 3}},
-		},
-
-		// struct
-		{
-			config: "coreos:\n  update:\n    reboot_strategy: off",
-		},
-		{
-			config:  "coreos:\n  update:\n    reboot_strategy: always",
-			entries: []Entry{{entryError, "invalid value always", 3}},
-		},
-
 		// unknown
 		{
 			config: "unknown: hi",
@@ -342,14 +254,6 @@ func TestCheckWriteFiles(t *testing.T) {
 		},
 		{
 			config: "write_files:\n  - path: /tmp/usr/valid",
-		},
-		{
-			config:  "write_files:\n  - path: /usr/invalid",
-			entries: []Entry{{entryError, "file cannot be written to a read-only filesystem", 2}},
-		},
-		{
-			config:  "write-files:\n  - path: /tmp/../usr/invalid",
-			entries: []Entry{{entryError, "file cannot be written to a read-only filesystem", 2}},
 		},
 	}
 

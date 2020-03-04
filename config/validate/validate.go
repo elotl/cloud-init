@@ -36,20 +36,6 @@ var (
 // can be validated.
 func Validate(userdataBytes []byte) (Report, error) {
 	return validateCloudConfig(userdataBytes, Rules)
-	// switch {
-	// case len(userdataBytes) == 0:
-	// 	return Report{}, nil
-	// case config.IsScript(string(userdataBytes)):
-	// 	return Report{}, nil
-	// case config.IsIgnitionConfig(string(userdataBytes)):
-	// 	return Report{}, nil
-	// case config.IsCloudConfig(string(userdataBytes)):
-	// 	return validateCloudConfig(userdataBytes, Rules)
-	// default:
-	// 	return Report{entries: []Entry{
-	// 		{kind: entryError, message: `must be "#cloud-config" or begin with "#!"`, line: 1},
-	// 	}}, nil
-	// }
 }
 
 // validateCloudConfig runs all of the validation rules in Rules and returns

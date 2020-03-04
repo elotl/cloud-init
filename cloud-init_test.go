@@ -75,12 +75,6 @@ func TestMergeConfigs(t *testing.T) {
 			md:  datasource.Metadata{SSHPublicKeys: map[string]string{"zaphod": "beeblebrox"}},
 			out: config.CloudConfig{Hostname: "cc-host", SSHAuthorizedKeys: []string{"beeblebrox"}},
 		},
-		{
-			// Non-mergeable settings in user-data should not be affected
-			cc:  &config.CloudConfig{Hostname: "cc-host", ManageEtcHosts: config.EtcHosts("lolz")},
-			md:  datasource.Metadata{Hostname: "md-host"},
-			out: config.CloudConfig{Hostname: "cc-host", ManageEtcHosts: config.EtcHosts("lolz")},
-		},
 	}
 
 	for i, tt := range tests {

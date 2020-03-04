@@ -38,14 +38,6 @@ func TestNewCloudConfig(t *testing.T) {
 			config:   CloudConfig{WriteFiles: []File{{Path: "hyphen"}}},
 		},
 		{
-			contents: "#cloud-config\ncoreos:\n  update:\n    reboot-strategy: off",
-			config:   CloudConfig{CoreOS: CoreOS{Update: Update{RebootStrategy: "off"}}},
-		},
-		{
-			contents: "#cloud-config\ncoreos:\n  update:\n    reboot-strategy: false",
-			config:   CloudConfig{CoreOS: CoreOS{Update: Update{RebootStrategy: "false"}}},
-		},
-		{
 			contents: "#cloud-config\nwrite_files:\n  - permissions: 0744",
 			config:   CloudConfig{WriteFiles: []File{{RawFilePermissions: "0744"}}},
 		},
@@ -209,11 +201,6 @@ func TestConfigCompile(t *testing.T) {
 
 func TestCloudConfigUnknownKeys(t *testing.T) {
 	contents := `
-coreos: 
-  etcd:
-    discovery: "https://discovery.etcd.io/827c73219eeb2fa5530027c37bf18877"
-  coreos_unknown:
-    foo: "bar"
 section_unknown:
   dunno:
     something
@@ -236,9 +223,6 @@ hostname:
 	}
 	if cfg.Hostname != "foo" {
 		t.Fatalf("hostname not correctly set when invalid keys are present")
-	}
-	if cfg.CoreOS.Etcd.Discovery != "https://discovery.etcd.io/827c73219eeb2fa5530027c37bf18877" {
-		t.Fatalf("etcd section not correctly set when invalid keys are present")
 	}
 	if len(cfg.WriteFiles) < 1 || cfg.WriteFiles[0].Content != "fun" || cfg.WriteFiles[0].Path != "/var/party" {
 		t.Fatalf("write_files section not correctly set when invalid keys are present")
@@ -272,30 +256,6 @@ func TestCloudConfigEmpty(t *testing.T) {
 // Assert that the parsing of a cloud config file "generally works"
 func TestCloudConfig(t *testing.T) {
 	contents := `
-coreos: 
-  etcd:
-    discovery: "https://discovery.etcd.io/827c73219eeb2fa5530027c37bf18877"
-  update:
-    reboot_strategy: reboot
-  units:
-    - name: 50-eth0.network
-      runtime: yes
-      content: '[Match]
- 
-    Name=eth47
- 
- 
-    [Network]
- 
-    Address=10.209.171.177/19
- 
-'
-  oem:
-    id: rackspace
-    name: Rackspace Cloud Servers
-    version_id: 168.0.0
-    home_url: https://www.rackspace.com/cloud/servers/
-    bug_report_url: https://github.com/coreos/coreos-overlay
 ssh_authorized_keys:
   - foobar
   - foobaz
@@ -343,36 +303,8 @@ hostname: trontastic
 		}
 	}
 
-	if len(cfg.CoreOS.Units) != 1 {
-		t.Error("Failed to parse correct number of units")
-	} else {
-		u := cfg.CoreOS.Units[0]
-		expect := `[Match]
-Name=eth47
-
-[Network]
-Address=10.209.171.177/19
-`
-		if u.Content != expect {
-			t.Errorf("Unit has incorrect contents '%s'.\nExpected '%s'.", u.Content, expect)
-		}
-		if u.Runtime != true {
-			t.Errorf("Unit has incorrect runtime value")
-		}
-		if u.Name != "50-eth0.network" {
-			t.Errorf("Unit has incorrect name %s", u.Name)
-		}
-	}
-
-	if cfg.CoreOS.OEM.ID != "rackspace" {
-		t.Errorf("Failed parsing coreos.oem. Expected ID 'rackspace', got %q.", cfg.CoreOS.OEM.ID)
-	}
-
 	if cfg.Hostname != "trontastic" {
 		t.Errorf("Failed to parse hostname")
-	}
-	if cfg.CoreOS.Update.RebootStrategy != "reboot" {
-		t.Errorf("Failed to parse locksmith strategy")
 	}
 }
 

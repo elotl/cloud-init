@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -64,6 +65,14 @@ func NewNode(value interface{}, context context) node {
 	return n
 }
 
+func getTagName(k string) string {
+	i := strings.Index(k, ",")
+	if i == -1 {
+		return k
+	}
+	return k[0:i]
+}
+
 // toNode converts the given value into a node and then recursively processes
 // each of the nodes components (e.g. fields, array elements, keys).
 func toNode(v interface{}, c context, n *node) {
@@ -83,8 +92,7 @@ func toNode(v interface{}, c context, n *node) {
 			if k == "-" || k == "" {
 				continue
 			}
-
-			cn := node{name: k, field: ft}
+			cn := node{name: getTagName(k), field: ft}
 			c, ok := findKey(cn.name, c)
 			if ok {
 				cn.line = c.lineNumber

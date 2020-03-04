@@ -156,51 +156,12 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 		}
 	}
 
-	// for _, ccf := range []CloudConfigFile{
-	// 	system.OEM{OEM: cfg.CoreOS.OEM},
-	// 	system.Update{Update: cfg.CoreOS.Update, ReadConfig: system.DefaultReadConfig},
-	// 	system.EtcHosts{EtcHosts: cfg.ManageEtcHosts},
-	// 	system.Flannel{Flannel: cfg.CoreOS.Flannel},
-	// } {
-	// 	f, err := ccf.File()
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	if f != nil {
-	// 		writeFiles = append(writeFiles, *f)
-	// 	}
-	// }
-
-	// var units []system.Unit
-	// for _, u := range cfg.CoreOS.Units {
-	// 	units = append(units, system.Unit{Unit: u})
-	// }
-
-	// for _, ccu := range []CloudConfigUnit{
-	// 	system.Etcd{Etcd: cfg.CoreOS.Etcd},
-	// 	system.Etcd2{Etcd2: cfg.CoreOS.Etcd2},
-	// 	system.Fleet{Fleet: cfg.CoreOS.Fleet},
-	// 	system.Locksmith{Locksmith: cfg.CoreOS.Locksmith},
-	// 	system.Update{Update: cfg.CoreOS.Update, ReadConfig: system.DefaultReadConfig},
-	// } {
-	// 	units = append(units, ccu.Units()...)
-	// }
-
-	// if len(ifaces) > 0 {
-	// 	units = append(units, createNetworkingUnits(ifaces)...)
-	// 	if err := system.RestartNetwork(ifaces); err != nil {
-	// 		return err
-	// 	}
-	// }
-
 	if len(allErrors) > 0 {
 		aggregateErr := aggerr.NewAggregate(allErrors)
 		return aggregateErr
 	} else {
 		return nil
 	}
-	// um := system.NewUnitManager(env.Root())
-	// return processUnits(units, env.Root(), um)
 }
 
 func createNetworkingUnits(interfaces []network.InterfaceGenerator) (units []system.Unit) {
