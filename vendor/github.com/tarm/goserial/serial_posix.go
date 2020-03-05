@@ -14,10 +14,11 @@ import (
 	"io"
 	"os"
 	"syscall"
+	"time"
 	//"unsafe"
 )
 
-func openPort(name string, baud int) (rwc io.ReadWriteCloser, err error) {
+func openPort(name string, baud int, readTimeout time.Duration) (rwc io.ReadWriteCloser, err error) {
 	f, err := os.OpenFile(name, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0666)
 	if err != nil {
 		return
@@ -67,12 +68,25 @@ func openPort(name string, baud int) (rwc io.ReadWriteCloser, err error) {
 		return nil, err
 	}
 
-	// Select local mode
-	st.c_cflag |= (C.CLOCAL | C.CREAD)
+	// Turn off break interrupts, CR->NL, Parity checks, strip, and IXON
+	st.c_iflag &= ^C.tcflag_t(C.BRKINT | C.ICRNL | C.INPCK | C.ISTRIP | C.IXOFF | C.IXON | C.PARMRK)
+
+	// Select local mode, turn off parity, set to 8 bits
+	st.c_cflag &= ^C.tcflag_t(C.CSIZE | C.PARENB)
+	st.c_cflag |= (C.CLOCAL | C.CREAD | C.CS8)
 
 	// Select raw mode
 	st.c_lflag &= ^C.tcflag_t(C.ICANON | C.ECHO | C.ECHOE | C.ISIG)
 	st.c_oflag &= ^C.tcflag_t(C.OPOST)
+
+	// set blocking / non-blocking read
+	/*
+	*	http://man7.org/linux/man-pages/man3/termios.3.html
+	* - Supports blocking read and read with timeout operations
+	 */
+	vmin, vtime := posixTimeoutValues(readTimeout)
+	st.c_cc[C.VMIN] = C.cc_t(vmin)
+	st.c_cc[C.VTIME] = C.cc_t(vtime)
 
 	_, err = C.tcsetattr(fd, C.TCSANOW, &st)
 	if err != nil {
