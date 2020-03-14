@@ -32,7 +32,7 @@ type CloudConfig struct {
 	WriteFiles        []File   `yaml:"write_files,omitempty"`
 	Hostname          string   `yaml:"hostname,omitempty"`
 	Users             []User   `yaml:"users,omitempty"`
-	RunScript         string   `yaml:"runscript,omitempty"`
+	RunCmd            []string `yaml:"runcmd,omitempty"`
 	// this one is legacy
 	MilpaFiles []File `yaml:"milpa_files,omitempty"`
 	// Todo: add additional parameters supported by traditional cloud-init

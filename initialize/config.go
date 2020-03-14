@@ -146,13 +146,16 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 		}
 	}
 
-	if len(cfg.RunScript) > 0 {
-		err := system.RunScript(cfg.RunScript)
-		if err != nil {
-			log.Printf("Error running user script, trying to continue")
-			allErrors = append(allErrors, err)
-		} else {
-			log.Printf("Successfully ran script")
+	if len(cfg.RunCmd) > 0 {
+		for i, line := range cfg.RunCmd {
+			err := system.RunScript(line)
+			if err != nil {
+				log.Printf("Error running command #%d %q, trying to continue",
+					i+1, line)
+				allErrors = append(allErrors, err)
+			} else {
+				log.Printf("Successfully ran command #%d", i+1)
+			}
 		}
 	}
 
