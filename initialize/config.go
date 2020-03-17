@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"path"
+	"strings"
 
 	"github.com/elotl/cloud-init/config"
 	"github.com/elotl/cloud-init/network"
@@ -146,13 +147,14 @@ func Apply(cfg config.CloudConfig, ifaces []network.InterfaceGenerator, env *Env
 		}
 	}
 
-	if len(cfg.RunScript) > 0 {
-		err := system.RunScript(cfg.RunScript)
+	if len(cfg.RunCmd) > 0 {
+		fullScript := strings.Join(cfg.RunCmd, "\n")
+		err := system.RunScript(fullScript)
 		if err != nil {
-			log.Printf("Error running user script, trying to continue")
+			log.Println("Error running runcmd script, trying to continue")
 			allErrors = append(allErrors, err)
 		} else {
-			log.Printf("Successfully ran script")
+			log.Printf("Successfully ran runcmd commands")
 		}
 	}
 

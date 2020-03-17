@@ -32,9 +32,8 @@ write_files:
 cloud-init supports a custom section for a user supplied script:
 
 ```
-runscript: |
-  #!/bin/bash
-  echo 'Hello, world!'
+runcmd:
+  - echo 'Hello, world!'
 ```
 
 ## user-data Field Substitution
